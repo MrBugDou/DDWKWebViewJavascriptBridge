@@ -1,17 +1,15 @@
-WebViewJavascriptBridge
-=======================
+# WebViewJavascriptBridge
 
 [![Circle CI](https://img.shields.io/circleci/project/github/marcuswestin/WebViewJavascriptBridge.svg)](https://circleci.com/gh/marcuswestin/WebViewJavascriptBridge)
 
 An iOS/OSX bridge for sending messages between Obj-C and JavaScript in WKWebViews, UIWebViews & WebViews.
 
-Migration Guide
----------------
+## Migration Guide
 
-When upgrading from v5.0.x to 6.0.x you will have to update the `setupWebViewJavascriptBridge` javascript snippet. See https://github.com/marcuswestin/WebViewJavascriptBridge#usage part 4).
+When upgrading from v5.0.x to 6.0.x you will have to update the `setupWebViewJavascriptBridge` javascript snippet. See <https://github.com/marcuswestin/WebViewJavascriptBridge#usage> part 4).
 
-Who uses WebViewJavascriptBridge?
----------------------------------
+## Who uses WebViewJavascriptBridge?
+
 WebViewJavascriptBridge is used by a range of companies and projects. This is a small and incomplete sample list:
 
 - [Facebook Messenger](https://www.facebook.com/mobile/messenger)
@@ -30,10 +28,10 @@ WebViewJavascriptBridge is used by a range of companies and projects. This is a 
 - [BrowZine](http://thirdiron.com/browzine/)
 - ... & many more!
 
-Installation (iOS & OSX)
-------------------------
+## Installation (iOS & OSX)
 
 ### Installation with CocoaPods
+
 Add this to your [podfile](https://guides.cocoapods.org/using/getting-started.html) and run `pod install` to install:
 
 ```ruby
@@ -46,17 +44,15 @@ Drag the `WebViewJavascriptBridge` folder into your project.
 
 In the dialog that appears, uncheck "Copy items into destination group's folder" and select "Create groups for any folders".
 
-Examples
---------
+## Examples
 
 See the `Example Apps/` folder. Open either the iOS or OSX project and hit run to see it in action.
 
 To use a WebViewJavascriptBridge in your own project:
 
-Usage
------
+## Usage
 
-1) Import the header file and declare an ivar property:
+1. Import the header file and declare an ivar property:
 
 ```objc
 #import "WebViewJavascriptBridge.h"
@@ -68,77 +64,85 @@ Usage
 @property WebViewJavascriptBridge* bridge;
 ```
 
-2) Instantiate WebViewJavascriptBridge with a WKWebView, UIWebView (iOS) or WebView (OSX):
+2. Instantiate WebViewJavascriptBridge with a WKWebView, UIWebView (iOS) or WebView (OSX):
 
 ```objc
 self.bridge = [WebViewJavascriptBridge bridgeForWebView:webView];
 ```
 
-3) Register a handler in ObjC, and call a JS handler:
+3. Register a handler in ObjC, and call a JS handler:
 
 ```objc
 [self.bridge registerHandler:@"ObjC Echo" handler:^(id data, WVJBResponseCallback responseCallback) {
-	NSLog(@"ObjC Echo called with: %@", data);
-	responseCallback(data);
+ NSLog(@"ObjC Echo called with: %@", data);
+ responseCallback(data);
 }];
 [self.bridge callHandler:@"JS Echo" data:nil responseCallback:^(id responseData) {
-	NSLog(@"ObjC received response: %@", responseData);
+ NSLog(@"ObjC received response: %@", responseData);
 }];
 ```
 
-4) Copy and paste `setupWebViewJavascriptBridge` into your JS:
-	
+4. Copy and paste `setupWebViewJavascriptBridge` into your JS:
+
 ```javascript
 function setupWebViewJavascriptBridge(callback) {
-	if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
-	if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
-	window.WVJBCallbacks = [callback];
-	var WVJBIframe = document.createElement('iframe');
-	WVJBIframe.style.display = 'none';
-	WVJBIframe.src = 'https://__bridge_loaded__';
-	document.documentElement.appendChild(WVJBIframe);
-	setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+  if (window.WebViewJavascriptBridge) {
+    return callback(WebViewJavascriptBridge)
+  }
+  if (window.WVJBCallbacks) {
+    return window.WVJBCallbacks.push(callback)
+  }
+  window.WVJBCallbacks = [callback]
+  var WVJBIframe = document.createElement('iframe')
+  WVJBIframe.style.display = 'none'
+  WVJBIframe.src = 'https://__bridge_loaded__'
+  document.documentElement.appendChild(WVJBIframe)
+  setTimeout(function () {
+    document.documentElement.removeChild(WVJBIframe)
+  }, 0)
 }
 ```
 
-5) Finally, call `setupWebViewJavascriptBridge` and then use the bridge to register handlers and call ObjC handlers:
+5. Finally, call `setupWebViewJavascriptBridge` and then use the bridge to register handlers and call ObjC handlers:
 
 ```javascript
-setupWebViewJavascriptBridge(function(bridge) {
-	
-	/* Initialize your app here */
+setupWebViewJavascriptBridge(function (bridge) {
+  /* Initialize your app here */
 
-	bridge.registerHandler('JS Echo', function(data, responseCallback) {
-		console.log("JS Echo called with:", data)
-		responseCallback(data)
-	})
-	bridge.callHandler('ObjC Echo', {'key':'value'}, function responseCallback(responseData) {
-		console.log("JS received response:", responseData)
-	})
+  bridge.registerHandler('JS Echo', function (data, responseCallback) {
+    console.log('JS Echo called with:', data)
+    responseCallback(data)
+  })
+  bridge.callHandler(
+    'ObjC Echo',
+    { key: 'value' },
+    function responseCallback(responseData) {
+      console.log('JS received response:', responseData)
+    }
+  )
 })
 ```
 
-Automatic reference counting (ARC)
-----------------------------------
+## Automatic reference counting (ARC)
+
 This library relies on ARC, so if you use ARC in you project, all works fine.
 But if your project have no ARC support, be sure to do next steps:
 
-1) In your Xcode project open project settings -> 'Build Phases'
+1. In your Xcode project open project settings -> 'Build Phases'
 
-2) Expand 'Compile Sources' header and find all *.m files which are belongs to this library. Make attention on the 'Compiler Flags' in front of each source file in this list
+2. Expand 'Compile Sources' header and find all \*.m files which are belongs to this library. Make attention on the 'Compiler Flags' in front of each source file in this list
 
-3) For each file add '-fobjc-arc' flag
+3. For each file add '-fobjc-arc' flag
 
 Now all WVJB files will be compiled with ARC support.
 
-Contributors & Forks
---------------------
-Contributors: https://github.com/marcuswestin/WebViewJavascriptBridge/graphs/contributors
+## Contributors & Forks
 
-Forks: https://github.com/marcuswestin/WebViewJavascriptBridge/network/members
+Contributors: <https://github.com/marcuswestin/WebViewJavascriptBridge/graphs/contributors>
 
-API Reference
--------------
+Forks: <https://github.com/marcuswestin/WebViewJavascriptBridge/network/members>
+
+## API Reference
 
 ### ObjC API
 
@@ -148,7 +152,7 @@ Create a javascript bridge for the given web view.
 
 Example:
 
-```objc	
+```objc
 [WebViewJavascriptBridge bridgeForWebView:webView];
 ```
 
@@ -160,15 +164,16 @@ Example:
 
 ```objc
 [self.bridge registerHandler:@"getScreenHeight" handler:^(id data, WVJBResponseCallback responseCallback) {
-	responseCallback([NSNumber numberWithInt:[UIScreen mainScreen].bounds.size.height]);
+ responseCallback([NSNumber numberWithInt:[UIScreen mainScreen].bounds.size.height]);
 }];
 [self.bridge registerHandler:@"log" handler:^(id data, WVJBResponseCallback responseCallback) {
-	NSLog(@"Log: %@", data);
+ NSLog(@"Log: %@", data);
 }];
 
 ```
 
 ##### `[bridge callHandler:(NSString*)handlerName data:(id)data]`
+
 ##### `[bridge callHandler:(NSString*)handlerName data:(id)data responseCallback:(WVJBResponseCallback)callback]`
 
 Call the javascript handler called `handlerName`. If a `responseCallback` block is given the javascript handler can respond.
@@ -178,7 +183,7 @@ Example:
 ```objc
 [self.bridge callHandler:@"showAlert" data:@"Hi from ObjC to JS!"];
 [self.bridge callHandler:@"getCurrentPageUrl" data:nil responseCallback:^(id responseData) {
-	NSLog(@"Current UIWebView page URL is: %@", responseData);
+ NSLog(@"Current UIWebView page URL is: %@", responseData);
 }];
 ```
 
@@ -192,9 +197,7 @@ UNSAFE. Speed up bridge message passing by disabling the setTimeout safety check
 
 Example:
 
-	[self.bridge disableJavscriptAlertBoxSafetyTimeout];
-
-
+[self.bridge disableJavscriptAlertBoxSafetyTimeout];
 
 ### Javascript API
 
@@ -205,14 +208,16 @@ Register a handler called `handlerName`. The ObjC can then call this handler wit
 Example:
 
 ```javascript
-bridge.registerHandler("showAlert", function(data) { alert(data) })
-bridge.registerHandler("getCurrentPageUrl", function(data, responseCallback) {
-	responseCallback(document.location.toString())
+bridge.registerHandler('showAlert', function (data) {
+  alert(data)
+})
+bridge.registerHandler('getCurrentPageUrl', function (data, responseCallback) {
+  responseCallback(document.location.toString())
 })
 ```
 
-
 ##### `bridge.callHandler("handlerName", data)`
+
 ##### `bridge.callHandler("handlerName", data, function responseCallback(responseData) { ... })`
 
 Call an ObjC handler called `handlerName`. If a `responseCallback` function is given the ObjC handler can respond.
@@ -220,12 +225,11 @@ Call an ObjC handler called `handlerName`. If a `responseCallback` function is g
 Example:
 
 ```javascript
-bridge.callHandler("Log", "Foo")
-bridge.callHandler("getScreenHeight", null, function(response) {
-	alert('Screen height:' + response)
+bridge.callHandler('Log', 'Foo')
+bridge.callHandler('getScreenHeight', null, function (response) {
+  alert('Screen height:' + response)
 })
 ```
-
 
 ##### `bridge.disableJavscriptAlertBoxSafetyTimeout()`
 
