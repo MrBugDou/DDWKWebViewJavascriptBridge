@@ -10,7 +10,7 @@
 
 #import "WebViewJavascriptBridge_JS.h"
 
-NSString * WebViewJavascriptBridge_js() {
+NSString * WebViewJavascriptBridge_js(void) {
 	#define __wvjb_js_func__(x) #x
 	
 	// BEGIN preprocessorJSCode

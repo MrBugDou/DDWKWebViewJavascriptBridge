@@ -92,11 +92,13 @@
 
 
 - (void)WKFlushMessageQueue {
+    __weak __typeof(self)weakSelf = self;
     [_webView evaluateJavaScript:[_base webViewJavascriptFetchQueyCommand] completionHandler:^(NSString* result, NSError* error) {
+        __strong __typeof(weakSelf)strongSelf = weakSelf;
         if (error != nil) {
             NSLog(@"WebViewJavascriptBridge: WARNING: Error when trying to fetch data from WKWebView: %@", error);
         }
-        [_base flushMessageQueue:result];
+        [strongSelf->_base flushMessageQueue:result];
     }];
 }
 
